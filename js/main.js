@@ -1,20 +1,15 @@
 $(() => {
-  let talksData = JSON.parse(data.replace("\n", ""));
-  let majorsData = JSON.parse(major);
-
   let rikei = [];
-  let bunkei = []
+  let bunkei = [];
 
-  for (let i = 0; i < talksData.length; i++) {
-    let el = talksData[i];
-    el.major = majorsData[i].major;
-    if (majorsData[i].bunri == 0) {
-      rikei.push(el);
+  let bunkeiAffiliation = ["文化", "社会", "学際"];
+  for (let d of data) {
+    if (bunkeiAffiliation.some(x => d.affiliation.includes(x))) {
+      bunkei.push(d);
     } else {
-      bunkei.push(el);
+      rikei.push(d);
     }
   }
-
 
   let template = $('#template').html();
   Mustache.parse(template);
