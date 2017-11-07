@@ -1,24 +1,34 @@
-function construstTimeTable(timeTable, talksData, majorsData) {
-  return timeTable.map(d => {
-    let talk = talksData.filter(talk => talk.name.startsWith(d.name))[0];
-    let major = majorsData.filter(major => major.name.startsWith(d.name))[0];
-    return {time: d.time, name: talk.name, title: talk.title, major: major.major};
-  });
+function construstTimeTable(timeTable, talksData) {
+  return Object.keys(timeTable)
+               .filter(function (k) {return timeTable[k];})
+               .sort()
+               .map(function (time) {
+                 var name = timeTable[time];
+                 var index = 0;
+
+                 if (name == "なおと") {
+                   name = "宇佐美尚人";
+                 } else if (name.indexOf("こすも") == 0) {
+                   index = parseInt(name.charAt(3)) - 1;
+                   name = "宇佐美こすも";
+                 }
+
+                 var talk = talksData.filter(function (t) { return t.name.indexOf(name) == 0; })[index];
+
+                 return { time: time, name: talk.name, title: talk.title, major: talk.affiliation };
+               });
 }
 
 
-$(() => {
-  let talksData = JSON.parse(data.replace("\n", ""));
-  let majorsData = JSON.parse(major);
-  let firstTable = JSON.parse(firstDay);
-  let secondTable = JSON.parse(secondDay);
+$(function () {
+  var firstDayTable = construstTimeTable(day1, data);
+  var secondDayTable = construstTimeTable(day2, data);
+  var thirdDayTable = construstTimeTable(day3, data);
 
-  let firstDayTable = construstTimeTable(firstTable, talksData, majorsData);
-  let secondDayTable = construstTimeTable(secondTable, talksData, majorsData);
-
-  let template = $('#template').html();
+  var template = $('#template').html();
   Mustache.parse(template);
-  let renderedFirst = Mustache.render(template, {table: firstDayTable, header: "5/20(土)"});
-  let renderedSecond = Mustache.render(template, {table: secondDayTable, header: "5/21(日)"});
-  $('.article-headline').html(renderedFirst + "<br />" + renderedSecond);
+  var renderedFirst = Mustache.render(template, {table: firstDayTable, header: "11/24(金)"});
+  var renderedSecond = Mustache.render(template, {table: secondDayTable, header: "11/25(土)"});
+  var renderedThird = Mustache.render(template, {table: thirdDayTable, header: "11/26(日)"});
+  $('.article-headline').html(renderedFirst + "<br />" + renderedSecond + "<br />" + renderedThird);
 });
